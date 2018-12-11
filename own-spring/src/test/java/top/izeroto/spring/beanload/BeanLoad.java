@@ -1,20 +1,22 @@
-package top.izeroto.spring.beanfactory;
+package top.izeroto.spring.beanload;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
-import top.izeroto.spring.beanfactory.bean.AliasBean;
-import top.izeroto.spring.beanfactory.bean.TestBean;
+import top.izeroto.spring.bean.AliasBean;
+import top.izeroto.spring.bean.TestBean;
 
 /**
  * bean加载获取探究
  */
-public class BeanFactoryTest {
+public class BeanLoad {
 
     /**
-     * xml方式
+     * beanFactory
      */
     @Test
     public void testBeanFactoryGetBean(){
@@ -36,4 +38,15 @@ public class BeanFactoryTest {
 		Assert.assertEquals("aliasBean",aliasBean.getName());
 		Assert.assertEquals(testAliasBean,aliasBean);
 	}
+
+	/**
+	 * applicationContext
+	 */
+	@Test
+	public void testApplicationContextGetBean(){
+		ApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-bean.xml");
+		System.out.println("加载bean数："+context.getBeanDefinitionCount());
+		TestBean bean = (TestBean) context.getBean("testBean");
+		Assert.assertEquals("testBean",bean.getName());
+    }
 }

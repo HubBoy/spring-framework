@@ -1,4 +1,4 @@
-package top.izeroto.spring.beanfactory;
+package top.izeroto.spring.beanload;
 
 import org.springframework.beans.factory.parsing.*;
 

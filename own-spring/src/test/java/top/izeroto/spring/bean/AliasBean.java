@@ -1,4 +1,4 @@
-package top.izeroto.spring.beanfactory.bean;
+package top.izeroto.spring.bean;
 
 public class AliasBean {
 

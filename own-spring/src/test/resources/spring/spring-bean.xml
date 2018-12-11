@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="testBean" class="top.izeroto.spring.beanfactory.bean.TestBean"/>
-	<bean name="aliasBean"  class="top.izeroto.spring.beanfactory.bean.AliasBean"/>
+    <bean id="testBean" class="top.izeroto.spring.bean.TestBean"/>
+	<bean name="aliasBean"  class="top.izeroto.spring.bean.AliasBean"/>
 	<alias name="aliasBean" alias="testAliasBean"></alias>
 </beans>

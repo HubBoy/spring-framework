@@ -11,7 +11,7 @@ public class Aop {
 	public void aopTest(){
 		ApplicationContext context = new ClassPathXmlApplicationContext("spring/spring-aop.xml");
 		TestBean testbean = (TestBean)context.getBean("testBean");
-		testbean.getName();
+		testbean.toString();
 	}
 
 }

@@ -1,28 +1,37 @@
 package top.izeroto.spring.aspects;
 
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 
 @Aspect
 public class AspectTest {
 
-	@Pointcut("execution(* *.getName(...))")
+	@Pointcut("execution(* top.izeroto.spring.bean.*.toString(..))")
 	public void pointCut(){
 
 	}
 
-	@Before("top.izeroto.spring.bean.TestBean.getName()")
+	@Before("pointCut()")
 	public void beforeMethod(){
 		System.out.println("before");
 	}
 
-	@After("top.izeroto.spring.bean.TestBean.getName()")
+	@After("pointCut()")
 	public void afterMethod() {
 		System.out.println("after");
 	}
 
 
-	@Around("top.izeroto.spring.bean.TestBean.getName()")
-	public void aroundMethod(){
-		System.out.println("around");
+	@Around("pointCut()")
+	public Object aroundMethod(ProceedingJoinPoint point){
+		System.out.println("around before");
+		Object object = null;
+		try {
+			object = point.proceed();
+		} catch (Throwable throwable) {
+			throwable.printStackTrace();
+		}
+		System.out.println("around after");
+		return object;
 	}
 }

@@ -11,4 +11,12 @@ public class TestBean {
     public String getName() {
         return name;
     }
+
+	@Override
+	public String toString() {
+    	super.toString();
+    	String s = "name="+name;
+		System.out.println(s);
+		return s;
+	}
 }

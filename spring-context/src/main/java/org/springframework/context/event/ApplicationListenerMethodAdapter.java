@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,11 +94,10 @@ public class ApplicationListenerMethodAdapter implements GenericApplicationListe
 		EventListener ann = AnnotatedElementUtils.findMergedAnnotation(this.targetMethod, EventListener.class);
 		this.declaredEventTypes = resolveDeclaredEventTypes(method, ann);
 		this.condition = (ann != null ? ann.condition() : null);
-		this.order = resolveOrder(method);
+		this.order = resolveOrder(this.targetMethod);
 	}
 
-
-	private List<ResolvableType> resolveDeclaredEventTypes(Method method, @Nullable EventListener ann) {
+	private static List<ResolvableType> resolveDeclaredEventTypes(Method method, @Nullable EventListener ann) {
 		int count = method.getParameterCount();
 		if (count > 1) {
 			throw new IllegalStateException(
@@ -123,10 +122,11 @@ public class ApplicationListenerMethodAdapter implements GenericApplicationListe
 		return Collections.singletonList(ResolvableType.forMethodParameter(method, 0));
 	}
 
-	private int resolveOrder(Method method) {
+	private static int resolveOrder(Method method) {
 		Order ann = AnnotatedElementUtils.findMergedAnnotation(method, Order.class);
 		return (ann != null ? ann.value() : 0);
 	}
+
 
 	/**
 	 * Initialize this instance.
@@ -188,9 +188,9 @@ public class ApplicationListenerMethodAdapter implements GenericApplicationListe
 
 	/**
 	 * Resolve the method arguments to use for the specified {@link ApplicationEvent}.
-	 * <p>These arguments will be used to invoke the method handled by this instance. Can
-	 * return {@code null} to indicate that no suitable arguments could be resolved and
-	 * therefore the method should not be invoked at all for the specified event.
+	 * <p>These arguments will be used to invoke the method handled by this instance.
+	 * Can return {@code null} to indicate that no suitable arguments could be resolved
+	 * and therefore the method should not be invoked at all for the specified event.
 	 */
 	@Nullable
 	protected Object[] resolveArguments(ApplicationEvent event) {
@@ -201,13 +201,15 @@ public class ApplicationListenerMethodAdapter implements GenericApplicationListe
 		if (this.method.getParameterCount() == 0) {
 			return new Object[0];
 		}
-		if (!ApplicationEvent.class.isAssignableFrom(declaredEventType.toClass()) &&
+		Class<?> declaredEventClass = declaredEventType.toClass();
+		if (!ApplicationEvent.class.isAssignableFrom(declaredEventClass) &&
 				event instanceof PayloadApplicationEvent) {
-			return new Object[] {((PayloadApplicationEvent) event).getPayload()};
+			Object payload = ((PayloadApplicationEvent) event).getPayload();
+			if (declaredEventClass.isInstance(payload)) {
+				return new Object[] {payload};
+			}
 		}
-		else {
-			return new Object[] {event};
-		}
+		return new Object[] {event};
 	}
 
 	protected void handleResult(Object result) {

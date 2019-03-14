@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2018 the original author or authors.
+ * Copyright 2002-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.core.io.buffer;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.function.IntPredicate;
 
 import org.springframework.util.Assert;
@@ -140,6 +141,11 @@ class LeakAwareDataBuffer implements PooledDataBuffer {
 	}
 
 	@Override
+	public DataBuffer ensureCapacity(int capacity) {
+		return this.delegate.ensureCapacity(capacity);
+	}
+
+	@Override
 	public byte getByte(int index) {
 		return this.delegate.getByte(index);
 	}
@@ -180,8 +186,13 @@ class LeakAwareDataBuffer implements PooledDataBuffer {
 	}
 
 	@Override
-	public DataBuffer write(ByteBuffer... byteBuffers) {
-		return this.delegate.write(byteBuffers);
+	public DataBuffer write(ByteBuffer... buffers) {
+		return this.delegate.write(buffers);
+	}
+
+	@Override
+	public DataBuffer write(CharSequence charSequence, Charset charset) {
+		return this.delegate.write(charSequence, charset);
 	}
 
 	@Override

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,8 +24,8 @@ import org.springframework.beans.factory.support.AutowireCandidateResolver;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
-import static org.junit.Assert.*;
-import static org.springframework.tests.TestResourceUtils.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.tests.TestResourceUtils.qualifiedResource;
 
 /**
  * Unit tests for {@link CustomAutowireConfigurer}.
@@ -47,7 +47,7 @@ public class CustomAutowireConfigurerTests {
 		bf.setAutowireCandidateResolver(customResolver);
 		cac.postProcessBeanFactory(bf);
 		TestBean testBean = (TestBean) bf.getBean("testBean");
-		assertEquals("#1!", testBean.getName());
+		assertThat(testBean.getName()).isEqualTo("#1!");
 	}
 
 

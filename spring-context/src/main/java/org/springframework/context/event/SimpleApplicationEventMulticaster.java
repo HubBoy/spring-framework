@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -166,7 +166,7 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private void doInvokeListener(ApplicationListener listener, ApplicationEvent event) {
 		try {
 			listener.onApplicationEvent(event);
@@ -177,8 +177,8 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 				// Possibly a lambda-defined listener which we could not resolve the generic event type for
 				// -> let's suppress the exception and just log a debug message.
 				Log logger = LogFactory.getLog(getClass());
-				if (logger.isDebugEnabled()) {
-					logger.debug("Non-matching event type for listener: " + listener, ex);
+				if (logger.isTraceEnabled()) {
+					logger.trace("Non-matching event type for listener: " + listener, ex);
 				}
 			}
 			else {

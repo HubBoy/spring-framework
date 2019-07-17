@@ -79,7 +79,7 @@ Most applications can run through the WebFlux Java configuration, see <<webflux-
 
 `ServerRequest` and `ServerResponse` are immutable interfaces that offer JDK 8-friendly
 access to the HTTP request and response.
-Both request and response provide http://www.reactive-streams.org[Reactive Streams] back pressure
+Both request and response provide https://www.reactive-streams.org[Reactive Streams] back pressure
 against the body streams.
 The request body is represented with a Reactor `Flux` or `Mono`.
 The response body is represented with any Reactive Streams `Publisher`, including `Flux` and `Mono`.
@@ -137,7 +137,7 @@ The following example shows how to access multiparts, one at a time, in streamin
 
 [source,java]
 ----
-Flux<Part> parts = request.body(BodyExtractos.toParts());
+Flux<Part> parts = request.body(BodyExtractors.toParts());
 ----
 
 
@@ -164,6 +164,15 @@ URI location = ...
 ServerResponse.created(location).build();
 ----
 
+Depending on the codec used, it is possible to pass hint parameters to customize how the
+body is serialized or deserialized. For example, to specify a https://www.baeldung.com/jackson-json-view-annotation[Jackson JSON view]:
+
+====
+[source,java]
+----
+ServerResponse.ok().hint(Jackson2CodecSupport.JSON_VIEW_HINT, MyJacksonView.class).body(...);
+----
+====
 
 
 [[webflux-fn-handler-classes]]
@@ -253,8 +262,8 @@ public class PersonHandler {
 	}
 
 	private void validate(Person person) {
-		Errors errors = new BeanPropertyBindingResult(body, "person");
-		validator.validate(body, errors);
+		Errors errors = new BeanPropertyBindingResult(person, "person");
+		validator.validate(person, errors);
 		if (errors.hasErrors) {
 			throw new ServerWebInputException(errors.toString()); <3>
 		}

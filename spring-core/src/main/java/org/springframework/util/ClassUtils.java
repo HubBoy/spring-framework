@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -657,11 +657,11 @@ public abstract class ClassUtils {
 		if (CollectionUtils.isEmpty(classes)) {
 			return "[]";
 		}
-		StringJoiner sj = new StringJoiner(", ", "[", "]");
+		StringJoiner stringJoiner = new StringJoiner(", ", "[", "]");
 		for (Class<?> clazz : classes) {
-			sj.add(clazz.getName());
+			stringJoiner.add(clazz.getName());
 		}
-		return sj.toString();
+		return stringJoiner.toString();
 	}
 
 	/**
@@ -841,7 +841,9 @@ public abstract class ClassUtils {
 	 * @param object the object to check
 	 * @see #isCglibProxyClass(Class)
 	 * @see org.springframework.aop.support.AopUtils#isCglibProxy(Object)
+	 * @deprecated as of 5.2, in favor of custom (possibly narrower) checks
 	 */
+	@Deprecated
 	public static boolean isCglibProxy(Object object) {
 		return isCglibProxyClass(object.getClass());
 	}
@@ -850,7 +852,9 @@ public abstract class ClassUtils {
 	 * Check whether the specified class is a CGLIB-generated class.
 	 * @param clazz the class to check
 	 * @see #isCglibProxyClassName(String)
+	 * @deprecated as of 5.2, in favor of custom (possibly narrower) checks
 	 */
+	@Deprecated
 	public static boolean isCglibProxyClass(@Nullable Class<?> clazz) {
 		return (clazz != null && isCglibProxyClassName(clazz.getName()));
 	}
@@ -858,7 +862,9 @@ public abstract class ClassUtils {
 	/**
 	 * Check whether the specified class name is a CGLIB-generated class.
 	 * @param className the class name to check
+	 * @deprecated as of 5.2, in favor of custom (possibly narrower) checks
 	 */
+	@Deprecated
 	public static boolean isCglibProxyClassName(@Nullable String className) {
 		return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
 	}
@@ -905,14 +911,10 @@ public abstract class ClassUtils {
 		}
 		Class<?> clazz = value.getClass();
 		if (Proxy.isProxyClass(clazz)) {
-			StringBuilder result = new StringBuilder(clazz.getName());
-			result.append(" implementing ");
-			Class<?>[] ifcs = clazz.getInterfaces();
-			for (int i = 0; i < ifcs.length; i++) {
-				result.append(ifcs[i].getName());
-				if (i < ifcs.length - 1) {
-					result.append(',');
-				}
+			String prefix = clazz.getName() + " implementing ";
+			StringJoiner result = new StringJoiner(",", prefix, "");
+			for (Class<?> ifc : clazz.getInterfaces()) {
+				result.add(ifc.getName());
 			}
 			return result.toString();
 		}

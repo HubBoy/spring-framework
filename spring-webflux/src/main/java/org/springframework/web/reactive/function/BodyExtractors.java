@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,12 +72,12 @@ public abstract class BodyExtractors {
 
 	/**
 	 * Variant of {@link #toMono(Class)} for type information with generics.
-	 * @param typeRef the type reference for the type to decode to
+	 * @param elementTypeRef the type reference for the type to decode to
 	 * @param <T> the element type to decode to
 	 * @return {@code BodyExtractor} for {@code Mono<T>}
 	 */
-	public static <T> BodyExtractor<Mono<T>, ReactiveHttpInputMessage> toMono(ParameterizedTypeReference<T> typeRef) {
-		return toMono(ResolvableType.forType(typeRef.getType()));
+	public static <T> BodyExtractor<Mono<T>, ReactiveHttpInputMessage> toMono(ParameterizedTypeReference<T> elementTypeRef) {
+		return toMono(ResolvableType.forType(elementTypeRef.getType()));
 	}
 
 	private static <T> BodyExtractor<Mono<T>, ReactiveHttpInputMessage> toMono(ResolvableType elementType) {

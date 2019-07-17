@@ -141,10 +141,10 @@ Typically, you start by asserting the response status and headers, as follows:
 [subs="verbatim,quotes"]
 ----
 	client.get().uri("/persons/1")
-			.accept(MediaType.APPLICATION_JSON_UTF8)
+			.accept(MediaType.APPLICATION_JSON)
 			.exchange()
 			.expectStatus().isOk()
-			.expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
+			.expectHeader().contentType(MediaType.APPLICATION_JSON)
 			// ...
 ----
 
@@ -228,7 +228,7 @@ Alternatively, if you want to assert there is no response content, you can use c
 
 When you use `expectBody()`, the response is consumed as a `byte[]`. This is useful for
 raw content assertions. For example, you can use
-http://jsonassert.skyscreamer.org[JSONAssert] to verify JSON content, as follows:
+https://jsonassert.skyscreamer.org[JSONAssert] to verify JSON content, as follows:
 
 [source,java,intent=0]
 [subs="verbatim,quotes"]

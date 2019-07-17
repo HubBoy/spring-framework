@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,9 +24,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
@@ -41,7 +39,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
 import org.springframework.test.context.TestExecutionListener;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.event.annotation.AfterTestClass;
 import org.springframework.test.context.event.annotation.AfterTestExecution;
 import org.springframework.test.context.event.annotation.AfterTestMethod;
@@ -54,9 +51,8 @@ import org.springframework.util.ReflectionUtils;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -78,12 +74,13 @@ public class EventPublishingTestExecutionListenerIntegrationTests {
 
 	private final TestContextManager testContextManager = new TestContextManager(ExampleTestCase.class);
 	private final TestContext testContext = testContextManager.getTestContext();
+	// Note that the following invocation of getApplicationContext() forces eager
+	// loading of the test's ApplicationContext which consequently results in the
+	// publication of all test execution events. Otherwise, TestContext#publishEvent
+	// would never fire any events for ExampleTestCase.
 	private final TestExecutionListener listener = testContext.getApplicationContext().getBean(TestExecutionListener.class);
 	private final Object testInstance = new ExampleTestCase();
-	private final Method testMethod = ReflectionUtils.findMethod(ExampleTestCase.class, "traceableTest");
-
-	@Rule
-	public final ExpectedException exception = ExpectedException.none();
+	private final Method traceableTestMethod = ReflectionUtils.findMethod(ExampleTestCase.class, "traceableTest");
 
 
 	@After
@@ -105,7 +102,7 @@ public class EventPublishingTestExecutionListenerIntegrationTests {
 
 	@Test
 	public void beforeTestMethodAnnotation() throws Exception {
-		testContextManager.beforeTestMethod(testInstance, testMethod);
+		testContextManager.beforeTestMethod(testInstance, traceableTestMethod);
 		verify(listener, only()).beforeTestMethod(testContext);
 	}
 
@@ -129,16 +126,10 @@ public class EventPublishingTestExecutionListenerIntegrationTests {
 	@Test
 	public void beforeTestMethodAnnotationWithFailingEventListener() throws Exception {
 		Method method = ReflectionUtils.findMethod(ExampleTestCase.class, "testWithFailingEventListener");
-
-		exception.expect(RuntimeException.class);
-		exception.expectMessage("Boom!");
-
-		try {
-			testContextManager.beforeTestMethod(testInstance, method);
-		}
-		finally {
-			verify(listener, only()).beforeTestMethod(testContext);
-		}
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() ->
+				testContextManager.beforeTestMethod(testInstance, method))
+			.withMessageContaining("Boom!");
+		verify(listener, only()).beforeTestMethod(testContext);
 	}
 
 	/**
@@ -154,28 +145,28 @@ public class EventPublishingTestExecutionListenerIntegrationTests {
 
 		testContextManager.beforeTestMethod(testInstance, method);
 
-		assertThat(countDownLatch.await(2, TimeUnit.SECONDS), equalTo(true));
+		assertThat(countDownLatch.await(2, TimeUnit.SECONDS)).isEqualTo(true);
 
 		verify(listener, only()).beforeTestMethod(testContext);
-		assertThat(TrackingAsyncUncaughtExceptionHandler.asyncException.getMessage(),
-			startsWith("Asynchronous exception for test method [" + methodName + "] in thread [" + THREAD_NAME_PREFIX));
+		assertThat(TrackingAsyncUncaughtExceptionHandler.asyncException.getMessage())
+			.startsWith("Asynchronous exception for test method [" + methodName + "] in thread [" + THREAD_NAME_PREFIX);
 	}
 
 	@Test
 	public void beforeTestExecutionAnnotation() throws Exception {
-		testContextManager.beforeTestExecution(testInstance, testMethod);
+		testContextManager.beforeTestExecution(testInstance, traceableTestMethod);
 		verify(listener, only()).beforeTestExecution(testContext);
 	}
 
 	@Test
 	public void afterTestExecutionAnnotation() throws Exception {
-		testContextManager.afterTestExecution(testInstance, testMethod, null);
+		testContextManager.afterTestExecution(testInstance, traceableTestMethod, null);
 		verify(listener, only()).afterTestExecution(testContext);
 	}
 
 	@Test
 	public void afterTestMethodAnnotation() throws Exception {
-		testContextManager.afterTestMethod(testInstance, testMethod, null);
+		testContextManager.afterTestMethod(testInstance, traceableTestMethod, null);
 		verify(listener, only()).afterTestMethod(testContext);
 	}
 
@@ -193,7 +184,6 @@ public class EventPublishingTestExecutionListenerIntegrationTests {
 
 	@RunWith(SpringRunner.class)
 	@ContextConfiguration(classes = TestEventListenerConfiguration.class)
-	@TestExecutionListeners(EventPublishingTestExecutionListener.class)
 	public static class ExampleTestCase {
 
 		@Traceable
@@ -272,12 +262,12 @@ public class EventPublishingTestExecutionListenerIntegrationTests {
 			throw new RuntimeException("Boom!");
 		}
 
-		@BeforeTestExecution
+		@BeforeTestExecution("'yes'")
 		public void beforeTestExecution(BeforeTestExecutionEvent e) throws Exception {
 			listener().beforeTestExecution(e.getSource());
 		}
 
-		@AfterTestExecution
+		@AfterTestExecution("'1'")
 		public void afterTestExecution(AfterTestExecutionEvent e) throws Exception {
 			listener().afterTestExecution(e.getSource());
 		}

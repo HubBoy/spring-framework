@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -565,7 +565,7 @@ public class CommonAnnotationBeanPostProcessor extends InitDestroyAnnotationBean
 	 * Class representing generic injection information about an annotated field
 	 * or setter method, supporting @Resource and related annotations.
 	 */
-	protected abstract class LookupElement extends InjectionMetadata.InjectedElement {
+	protected abstract static class LookupElement extends InjectionMetadata.InjectedElement {
 
 		protected String name = "";
 

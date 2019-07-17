@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -156,7 +156,52 @@ class BeanDefinitionDslTests {
 		}
 		context.getBean<Baz>()
 	}
+
+	@Test  // gh-21845
+	fun `Declare beans leveraging callable reference`() {
+		val beans = beans {
+			bean<Bar>()
+			bean(::baz)
+		}
+		val context = GenericApplicationContext().apply {
+			beans.initialize(this)
+			refresh()
+		}
+		context.getBean<Baz>()
+	}
 	
+
+	@Test
+	fun `Declare beans with accepted profiles`() {
+		val beans = beans {
+			profile("foo") { bean<Foo>() }
+			profile("!bar") { bean<Bar>() }
+			profile("bar | barbar") { bean<BarBar>() }
+			profile("baz & buz") { bean<Baz>() }
+			profile("baz & foo") { bean<FooFoo>() }
+		}
+		val context = GenericApplicationContext().apply {
+			environment.addActiveProfile("barbar")
+			environment.addActiveProfile("baz")
+			environment.addActiveProfile("buz")
+			beans.initialize(this)
+			refresh()
+		}
+		context.getBean<Baz>()
+		context.getBean<BarBar>()
+		context.getBean<Bar>()
+
+		try {
+			context.getBean<Foo>()
+			fail()
+		} catch (ignored: Exception) {
+		}
+		try {
+			context.getBean<FooFoo>()
+			fail()
+		} catch (ignored: Exception) {
+		}
+	}
 }
 
 class Foo
@@ -164,3 +209,5 @@ class Bar
 class Baz(val bar: Bar)
 class FooFoo(val name: String)
 class BarBar(val foos: Collection<Foo>)
+
+fun baz(bar: Bar) = Baz(bar)

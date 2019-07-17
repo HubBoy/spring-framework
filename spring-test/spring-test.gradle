@@ -28,7 +28,7 @@ dependencies {
 	optional("javax.servlet.jsp.jstl:javax.servlet.jsp.jstl-api:1.2.1")
 	optional("javax.xml.bind:jaxb-api:2.3.1")
 	optional("javax.websocket:javax.websocket-api:1.1")
-	optional("junit:junit:4.12")
+	optional("junit:junit:4.13-beta-3")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.testng:testng:6.14.3")
 	optional("org.aspectj:aspectjweaver:${aspectjVersion}")
@@ -37,10 +37,10 @@ dependencies {
 	optional("org.apache.taglibs:taglibs-standard-jstlel:1.2.5") {
 		exclude group: "org.apache.taglibs", module: "taglibs-standard-spec"
 	}
-	optional("net.sourceforge.htmlunit:htmlunit:2.34.1") {
+	optional("net.sourceforge.htmlunit:htmlunit:2.35.0") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	optional("org.seleniumhq.selenium:htmlunit-driver:2.34.0") {
+	optional("org.seleniumhq.selenium:htmlunit-driver:2.35.1") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.seleniumhq.selenium:selenium-java:3.141.59") {
@@ -53,6 +53,8 @@ dependencies {
 	optional("org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}")
 	optional("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
 	optional("io.projectreactor:reactor-test")
+	optional("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
+	optional("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}")
 	testCompile(project(":spring-context-support"))
 	testCompile(project(":spring-oxm"))
 	testCompile("javax.annotation:javax.annotation-api:1.3.2")
@@ -60,28 +62,24 @@ dependencies {
 	testCompile("javax.ejb:javax.ejb-api:3.2")
 	testCompile("javax.interceptor:javax.interceptor-api:1.2.2")
 	testCompile("javax.mail:javax.mail-api:1.6.2")
-	testCompile("org.hibernate:hibernate-core:5.4.1.Final")
-	testCompile("org.hibernate:hibernate-validator:6.0.15.Final")
-	// Enable use of the JUnit Platform Runner
+	testCompile("org.hibernate:hibernate-core:5.4.3.Final")
+	testCompile("org.hibernate:hibernate-validator:6.0.17.Final")
 	testCompile("org.junit.platform:junit-platform-runner")
+	testCompile("org.junit.platform:junit-platform-testkit")
 	testCompile("org.junit.jupiter:junit-jupiter-params")
 	testCompile("com.fasterxml.jackson.core:jackson-databind:${jackson2Version}")
 	testCompile("com.thoughtworks.xstream:xstream:1.4.10")
 	testCompile("com.rometools:rome:1.12.0")
 	testCompile("org.apache.tiles:tiles-api:${tiles3Version}")
-	testCompile("org.apache.tiles:tiles-core:${tiles3Version}", withoutJclOverSlf4J)
-	testCompile("org.apache.tiles:tiles-servlet:${tiles3Version}", withoutJclOverSlf4J)
+	testCompile("org.apache.tiles:tiles-core:${tiles3Version}", withoutJclOverSlf4j)
+	testCompile("org.apache.tiles:tiles-servlet:${tiles3Version}", withoutJclOverSlf4j)
 	testCompile("org.hsqldb:hsqldb:${hsqldbVersion}")
-	testCompile("org.apache.httpcomponents:httpclient:4.5.7") {
+	testCompile("org.apache.httpcomponents:httpclient:4.5.9") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	testCompile("io.projectreactor.netty:reactor-netty")
 	testCompile("de.bechte.junit:junit-hierarchicalcontextrunner:4.12.1")
-	// Pull in the latest JUnit 5 Launcher API and the Vintage engine as well
-	// so that we can run JUnit 4 tests in IntelliJ IDEA.
 	testRuntime("org.junit.jupiter:junit-jupiter-engine")
-	testRuntime("org.junit.platform:junit-platform-launcher")
-	testRuntime("org.junit.vintage:junit-vintage-engine")
 	testRuntime("org.glassfish:javax.el:3.0.1-b08")
 	testRuntime("com.sun.xml.bind:jaxb-core:2.3.0.1")
 	testRuntime("com.sun.xml.bind:jaxb-impl:2.3.0.1")
@@ -95,37 +93,24 @@ task testNG(type: Test) {
 	// Show STD_OUT & STD_ERR of the test JVM(s) on the console:
 	// testLogging.showStandardStreams = true
 	// forkEvery 1
-	reports.junitXml.destination = file("$buildDir/test-results")
-}
-
-task testJUnitJupiter(type: Test) {
-	description = "Runs JUnit Jupiter tests."
-	useJUnitPlatform {
-		includeEngines "junit-jupiter"
-		excludeTags "failing-test-case"
-	}
-	filter {
-		includeTestsMatching "org.springframework.test.context.junit.jupiter.*"
-	}
-	reports.junitXml.destination = file("$buildDir/test-results")
-	// Java Util Logging for the JUnit Platform.
-	// systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 }
 
 test {
-	description = "Runs JUnit 4 tests."
-	dependsOn testJUnitJupiter, testNG
-	useJUnit()
-	scanForTestClasses = false
+	description = "Runs JUnit 4 and JUnit Jupiter tests."
+	dependsOn testNG
+	useJUnitPlatform {
+		excludeTags "failing-test-case"
+	}
 	include(["**/*Tests.class", "**/*Test.class"])
-	exclude(["**/testng/**/*.*", "**/jupiter/**/*.*"])
-	reports.junitXml.destination = file("$buildDir/test-results")
+	exclude(["**/testng/**/*.*"])
+	// Java Util Logging for the JUnit Platform.
+	// systemProperty("java.util.logging.manager", "org.apache.logging.log4j.jul.LogManager")
 }
 
 task aggregateTestReports(type: TestReport) {
 	description = "Aggregates JUnit and TestNG test reports."
 	destinationDir = test.reports.html.destination
-	reportOn test, testJUnitJupiter, testNG
+	reportOn test, testNG
 }
 
 check.dependsOn aggregateTestReports

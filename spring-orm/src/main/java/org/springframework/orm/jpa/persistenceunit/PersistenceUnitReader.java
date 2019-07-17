@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -230,7 +230,7 @@ final class PersistenceUnitReader {
 		Element excludeUnlistedClasses = DomUtils.getChildElementByTagName(persistenceUnit, EXCLUDE_UNLISTED_CLASSES);
 		if (excludeUnlistedClasses != null) {
 			String excludeText = DomUtils.getTextValue(excludeUnlistedClasses);
-			unitInfo.setExcludeUnlistedClasses(!StringUtils.hasText(excludeText) || Boolean.valueOf(excludeText));
+			unitInfo.setExcludeUnlistedClasses(!StringUtils.hasText(excludeText) || Boolean.parseBoolean(excludeText));
 		}
 
 		// set JPA 2.0 shared cache mode

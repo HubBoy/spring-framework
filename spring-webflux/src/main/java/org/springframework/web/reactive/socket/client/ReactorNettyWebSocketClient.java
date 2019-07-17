@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -113,11 +113,12 @@ public class ReactorNettyWebSocketClient implements WebSocketClient {
 					String protocol = responseHeaders.getFirst("Sec-WebSocket-Protocol");
 					HandshakeInfo info = new HandshakeInfo(url, responseHeaders, Mono.empty(), protocol);
 					NettyDataBufferFactory factory = new NettyDataBufferFactory(outbound.alloc());
-					WebSocketSession session = new ReactorNettyWebSocketSession(inbound, outbound, info, factory);
+					WebSocketSession session = new ReactorNettyWebSocketSession(
+							inbound, outbound, info, factory, getMaxFramePayloadLength());
 					if (logger.isDebugEnabled()) {
 						logger.debug("Started session '" + session.getId() + "' for " + url);
 					}
-					return handler.handle(session);
+					return handler.handle(session).checkpoint(url + " [ReactorNettyWebSocketClient]");
 				})
 				.doOnRequest(n -> {
 					if (logger.isDebugEnabled()) {

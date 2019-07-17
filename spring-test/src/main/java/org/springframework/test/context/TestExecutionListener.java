@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,8 +44,6 @@ package org.springframework.test.context;
  * <p>Spring provides the following out-of-the-box implementations (all of
  * which implement {@code Ordered}):
  * <ul>
- * <li>{@link org.springframework.test.context.event.EventPublishingTestExecutionListener
- * EventPublishingTestExecutionListener} (not registered by default)</li>
  * <li>{@link org.springframework.test.context.web.ServletTestExecutionListener
  * ServletTestExecutionListener}</li>
  * <li>{@link org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener
@@ -58,6 +56,8 @@ package org.springframework.test.context;
  * TransactionalTestExecutionListener}</li>
  * <li>{@link org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener
  * SqlScriptsTestExecutionListener}</li>
+ * <li>{@link org.springframework.test.context.event.EventPublishingTestExecutionListener
+ * EventPublishingTestExecutionListener}</li>
  * </ul>
  *
  * @author Sam Brannen

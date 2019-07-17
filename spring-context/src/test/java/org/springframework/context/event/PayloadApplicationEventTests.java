@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Juergen Hoeller
@@ -38,7 +38,7 @@ public class PayloadApplicationEventTests {
 		ApplicationContext ac = new AnnotationConfigApplicationContext(AuditableListener.class);
 		AuditablePayloadEvent event = new AuditablePayloadEvent<>(this, "xyz");
 		ac.publishEvent(event);
-		assertTrue(ac.getBean(AuditableListener.class).events.contains(event));
+		assertThat(ac.getBean(AuditableListener.class).events.contains(event)).isTrue();
 	}
 
 

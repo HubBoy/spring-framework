@@ -19,8 +19,8 @@ a number of Java EE (and related) technologies.
 == Remoting and Web Services with Spring
 
 Spring features integration classes for remoting support with various technologies.
-The remoting support eases the development of remote-enabled services, implemented by
-your usual POJOs. Currently, Spring supports the following remoting technologies:
+The remoting support eases the development of remote-enabled services, implemented
+by your usual POJOs. Currently, Spring supports the following remoting technologies:
 
 * *Remote Method Invocation (RMI)*: Through the use of  `RmiProxyFactoryBean` and
   `RmiServiceExporter`, Spring supports both traditional RMI (with `java.rmi.Remote`
@@ -34,10 +34,11 @@ your usual POJOs. Currently, Spring supports the following remoting technologies
   `HessianServiceExporter`, you can transparently expose your services through the
   lightweight binary HTTP-based protocol provided by Caucho.
 * *JAX-WS*: Spring provides remoting support for web services through JAX-WS.
-* *JMS*: Remoting by using JMS as the underlying protocol is supported through the
-  `JmsInvokerServiceExporter` and `JmsInvokerProxyFactoryBean` classes.
-* *AMQP*: Remoting by using AMQP as the underlying protocol is supported by the Spring
-  AMQP project.
+* *JMS*: Remoting via JMS as the underlying protocol is supported through the
+  `JmsInvokerServiceExporter` and `JmsInvokerProxyFactoryBean` classes in the
+   `spring-jms` module.
+* *AMQP*: Remoting via AMQP as the underlying protocol is supported by the
+  separate Spring AMQP project.
 
 While discussing the remoting capabilities of Spring, we use the following domain
 model and corresponding services:
@@ -86,9 +87,9 @@ model and corresponding services:
 	}
 ----
 
-This section starts by exposing the service to a remote client by using RMI and talk a bit about
-the drawbacks of using RMI. It then continues with an example that uses Hessian as the
-protocol.
+This section starts by exposing the service to a remote client by using RMI and talk a bit
+about the drawbacks of using RMI. It then continues with an example that uses Hessian as
+the protocol.
 
 
 
@@ -141,8 +142,8 @@ The following example shows how to do so:
 In the preceding example, we override the port for the RMI registry. Often, your application
 server also maintains an RMI registry, and it is wise to not interfere with that one.
 Furthermore, the service name is used to bind the service. So, in the preceding example, the
-service is bound at `'rmi://HOST:1199/AccountService'`. We use this URL later on
-to link in the service at the client side.
+service is bound at `'rmi://HOST:1199/AccountService'`. We use this URL later on to link in
+the service at the client side.
 
 NOTE: The `servicePort` property has been omitted (it defaults to 0). This means that an
 anonymous port is used to communicate with the service.
@@ -195,7 +196,7 @@ transparently creates an invoker and remotely enables the account service throug
 === Using Hessian to Remotely Call Services through HTTP
 
 Hessian offers a binary HTTP-based remoting protocol. It is developed by Caucho,
-and you can find more information about Hessian itself at http://www.caucho.com[].
+and you can find more information about Hessian itself at https://www.caucho.com/[].
 
 
 [[remoting-caucho-protocols-hessian]]
@@ -256,7 +257,7 @@ Now we are ready to link in the service at the client. No explicit handler mappi
 specified (to map request URLs onto services), so we use `BeanNameUrlHandlerMapping`
 used. Hence, the service is exported at the URL indicated through its bean name
 within the containing `DispatcherServlet` instance's mapping (as defined earlier):
-`http://HOST:8080/remoting/AccountService`.
+`https://HOST:8080/remoting/AccountService`.
 
 Alternatively, you can create a `HessianServiceExporter` in your root application context (for example,
 in `WEB-INF/applicationContext.xml`), as the following example shows:
@@ -306,7 +307,7 @@ the `AccountService` to manage accounts, as the following example shows:
 	</bean>
 
 	<bean id="accountService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
-		<property name="serviceUrl" value="http://remotehost:8080/remoting/AccountService"/>
+		<property name="serviceUrl" value="https://remotehost:8080/remoting/AccountService"/>
 		<property name="serviceInterface" value="example.AccountService"/>
 	</bean>
 ----
@@ -340,7 +341,7 @@ this application context.
 
 NOTE: The preceding example does not show a flexible kind of security infrastructure. For
 more options as far as security is concerned, have a look at the Spring Security project
-at http://projects.spring.io/spring-security/.
+at https://projects.spring.io/spring-security/.
 
 
 
@@ -357,7 +358,7 @@ you choose a remoting technology).
 Under the hood, Spring uses either the standard facilities provided by the JDK or
 Apache `HttpComponents` to perform HTTP calls. If you need more
 advanced and easier-to-use functionality, use the latter. See
-http://hc.apache.org/httpcomponents-client-ga/[hc.apache.org/httpcomponents-client-ga/]
+https://hc.apache.org/httpcomponents-client-ga/[hc.apache.org/httpcomponents-client-ga/]
 for more information.
 
 [WARNING]
@@ -372,7 +373,7 @@ If you are concerned about security vulnerabilities due to Java serialization,
 consider the general-purpose serialization filter mechanism at the core JVM level,
 originally developed for JDK 9 but backported to JDK 8, 7 and 6 in the meantime. See
 https://blogs.oracle.com/java-platform-group/entry/incoming_filter_serialization_data_a
-and http://openjdk.java.net/jeps/290.
+and https://openjdk.java.net/jeps/290.
 ====
 
 
@@ -442,7 +443,7 @@ shows how to configure this arrangement:
 [subs="verbatim,quotes"]
 ----
 	<bean id="httpInvokerProxy" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="http://remotehost:8080/remoting/AccountService"/>
+		<property name="serviceUrl" value="https://remotehost:8080/remoting/AccountService"/>
 		<property name="serviceInterface" value="example.AccountService"/>
 	</bean>
 ----
@@ -626,7 +627,7 @@ In the following example, we use `JaxWsPortProxyFactoryBean` to create a proxy f
 	<bean id="accountWebService" class="org.springframework.remoting.jaxws.JaxWsPortProxyFactoryBean">
 		<property name="serviceInterface" value="example.AccountService"/> <1>
 		<property name="wsdlDocumentUrl" value="http://localhost:8888/AccountServiceEndpoint?WSDL"/>
-		<property name="namespaceUri" value="http://example/"/>
+		<property name="namespaceUri" value="https://example/"/>
 		<property name="serviceName" value="AccountService"/>
 		<property name="portName" value="AccountServiceEndpointPort"/>
 	</bean>
@@ -728,7 +729,7 @@ on both the client and the server:
 	<beans xmlns="http://www.springframework.org/schema/beans"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd">
+			https://www.springframework.org/schema/beans/spring-beans.xsd">
 
 		<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 			<property name="brokerURL" value="tcp://ep-t43:61616"/>
@@ -755,7 +756,7 @@ On the server, you need to expose the service object that uses the
 	<beans xmlns="http://www.springframework.org/schema/beans"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd">
+			https://www.springframework.org/schema/beans/spring-beans.xsd">
 
 		<bean id="checkingAccountService"
 				class="org.springframework.jms.remoting.JmsInvokerServiceExporter">
@@ -807,7 +808,7 @@ The following example defines beans that you can inject into other client-side o
 	<beans xmlns="http://www.springframework.org/schema/beans"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://www.springframework.org/schema/beans
-			http://www.springframework.org/schema/beans/spring-beans.xsd">
+			https://www.springframework.org/schema/beans/spring-beans.xsd">
 
 		<bean id="checkingAccountService"
 				class="org.springframework.jms.remoting.JmsInvokerProxyFactoryBean">
@@ -1020,7 +1021,7 @@ The following example uses a `String` variable argument:
 [subs="verbatim,quotes"]
 ----
 	String result = restTemplate.getForObject(
-			"http://example.com/hotels/{hotel}/bookings/{booking}", String.class, "42", "21");
+			"https://example.com/hotels/{hotel}/bookings/{booking}", String.class, "42", "21");
 ----
 
 The following example uses a `Map<String, String>`:
@@ -1031,7 +1032,7 @@ The following example uses a `Map<String, String>`:
 	Map<String, String> vars = Collections.singletonMap("hotel", "42");
 
 	String result = restTemplate.getForObject(
-			"http://example.com/hotels/{hotel}/rooms/{hotel}", String.class, vars);
+			"https://example.com/hotels/{hotel}/rooms/{hotel}", String.class, vars);
 ----
 
 Keep in mind URI templates are automatically encoded, as the following example shows:
@@ -1039,9 +1040,9 @@ Keep in mind URI templates are automatically encoded, as the following example s
 [source,java,indent=0]
 [subs="verbatim,quotes"]
 ----
-	restTemplate.getForObject("http://example.com/hotel list", String.class);
+	restTemplate.getForObject("https://example.com/hotel list", String.class);
 
-	// Results in request to "http://example.com/hotel%20list"
+	// Results in request to "https://example.com/hotel%20list"
 ----
 
 You can use the `uriTemplateHandler` property of `RestTemplate` to customize how URIs
@@ -1058,7 +1059,7 @@ You can use the `exchange()` methods to specify request headers, as the followin
 [source,java,indent=0]
 [subs="verbatim,quotes"]
 ----
-	String uriTemplate = "http://example.com/hotels/{hotel}";
+	String uriTemplate = "https://example.com/hotels/{hotel}";
 	URI uri = UriComponentsBuilder.fromUriString(uriTemplate).build(42);
 
 	RequestEntity<Void> requestEntity = RequestEntity.get(uri)
@@ -1083,7 +1084,7 @@ content with the help of an `HttpMessageConverter`.
 On a POST, an input object is serialized to the request body, as the following example shows:
 
 ----
-URI location = template.postForLocation("http://example.com/people", person);
+URI location = template.postForLocation("https://example.com/people", person);
 ----
 
 You need not explicitly set the Content-Type header of the request. In most cases,
@@ -1095,7 +1096,7 @@ turn, influences what message converter is selected.
 On a GET, the body of the response is deserialized to an output `Object`, as the following example shows:
 
 ----
-Person person = restTemplate.getForObject("http://example.com/people/{id}", Person.class, 42);
+Person person = restTemplate.getForObject("https://example.com/people/{id}", Person.class, 42);
 ----
 
 The `Accept` header of the request does not need to be explicitly set. In most cases,
@@ -1141,7 +1142,10 @@ request and response. By default, this converter supports all text media types
 | An `HttpMessageConverter` implementation that can read and write form data from the HTTP
 request and response. By default, this converter reads and writes the
 `application/x-www-form-urlencoded` media type. Form data is read from and written into a
-`MultiValueMap<String, String>`.
+`MultiValueMap<String, String>`. The converter can also write (but not read) multipart
+data read from a `MultiValueMap<String, Object>`. By default, `multipart/form-data` is
+supported. As of Spring Framework 5.2, additional multipart subtypes can be supported for
+writing form data. Consult the javadoc for `FormHttpMessageConverter` for further details.
 
 | `ByteArrayHttpMessageConverter`
 | An `HttpMessageConverter` implementation that can read and write byte arrays from the
@@ -1189,7 +1193,7 @@ and writes the media type supported by the Java I/O API.
 [[rest-template-jsonview]]
 ===== Jackson JSON Views
 
-You can specify a http://wiki.fasterxml.com/JacksonJsonViews[Jackson JSON View]
+You can specify a https://www.baeldung.com/jackson-json-view-annotation[Jackson JSON View]
 to serialize only a subset of the object properties, as the following example shows:
 
 [source,java,indent=0]
@@ -1199,7 +1203,7 @@ to serialize only a subset of the object properties, as the following example sh
 	value.setSerializationView(User.WithoutPasswordView.class);
 
 	RequestEntity<MappingJacksonValue> requestEntity =
-		RequestEntity.post(new URI("http://example.com/user")).body(value);
+		RequestEntity.post(new URI("https://example.com/user")).body(value);
 
 	ResponseEntity<String> response = template.exchange(requestEntity, String.class);
 ----
@@ -1235,7 +1239,7 @@ Once the `MultiValueMap` is ready, you can pass it to the `RestTemplate`, as the
 [subs="verbatim,quotes"]
 ----
 	MultipartBodyBuilder builder = ...;
-	template.postForObject("http://example.com/upload", builder.build(), Void.class);
+	template.postForObject("https://example.com/upload", builder.build(), Void.class);
 ----
 
 If the `MultiValueMap` contains at least one non-`String` value, which could also be
@@ -2673,8 +2677,8 @@ namespace elements, you need to reference the JMS schema, as the following examp
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xmlns:jms="http://www.springframework.org/schema/jms" <1>
 			xsi:schemaLocation="
-				http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-				http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+				http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+				http://www.springframework.org/schema/jms https://www.springframework.org/schema/jms/spring-jms.xsd">
 
 		<!-- bean definitions here -->
 
@@ -4377,11 +4381,11 @@ you can accept the coupling to both Spring and JMX, then do so.
 
 This section contains links to further resources about JMX:
 
-* The http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html[JMX
+* The https://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html[JMX
 homepage] at Oracle.
-* The http://jcp.org/aboutJava/communityprocess/final/jsr003/index3.html[JMX
+* The https://jcp.org/aboutJava/communityprocess/final/jsr003/index3.html[JMX
   specification] (JSR-000003).
-* The http://jcp.org/aboutJava/communityprocess/final/jsr160/index.html[JMX Remote API
+* The https://jcp.org/aboutJava/communityprocess/final/jsr160/index.html[JMX Remote API
   specification] (JSR-000160).
 * The http://mx4j.sourceforge.net/[MX4J homepage]. (MX4J is an open-source implementation of
   various JMX specs.)
@@ -5646,12 +5650,12 @@ The following example shows the bean definitions for the preceding code:
 [subs="verbatim,quotes"]
 ----
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host" value="mail.mycompany.com"/>
+		<property name="host" value="mail.mycompany.example"/>
 	</bean>
 
 	<!-- this is a template message that we can pre-load with default state -->
 	<bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
-		<property name="from" value="customerservice@mycompany.com"/>
+		<property name="from" value="customerservice@mycompany.example"/>
 		<property name="subject" value="Your order"/>
 	</bean>
 
@@ -5698,7 +5702,7 @@ callback interface. In the following example, the `mailSender` property is of ty
 				public void prepare(MimeMessage mimeMessage) throws Exception {
 					mimeMessage.setRecipient(Message.RecipientType.TO,
 							new InternetAddress(order.getCustomer().getEmailAddress()));
-					mimeMessage.setFrom(new InternetAddress("mail@mycompany.com"));
+					mimeMessage.setFrom(new InternetAddress("mail@mycompany.example"));
 					mimeMessage.setText("Dear " + order.getCustomer().getFirstName() + " " +
 							order.getCustomer().getLastName() + ", thanks for your order. " +
 							"Your order number is " + order.getOrderNumber() + ".");
@@ -5855,7 +5859,7 @@ implementations behind the common interfaces abstracts away the differences betw
 SE 5, Java SE 6, and Java EE environments.
 
 Spring also features integration classes to support scheduling with the `Timer`
-(part of the JDK since 1.3) and the Quartz Scheduler ( http://quartz-scheduler.org[]).
+(part of the JDK since 1.3) and the Quartz Scheduler ( https://www.quartz-scheduler.org/[]).
 You can set up both of those schedulers by using a `FactoryBean` with optional references to
 `Timer` or `Trigger` instances, respectively. Furthermore, a convenience class for both
 the Quartz Scheduler and the `Timer` is available that lets you invoke a method of
@@ -6209,7 +6213,7 @@ number of milliseconds to wait before the first execution of the method, as the 
 	}
 ----
 
-If simple periodic scheduling is not expressive enough, you ca provide a cron expression.
+If simple periodic scheduling is not expressive enough, you can provide a cron expression.
 For example, the following executes only on weekdays:
 
 [source,java,indent=0]
@@ -6557,7 +6561,7 @@ The following example shows these other options:
 
 Quartz uses `Trigger`, `Job`, and `JobDetail` objects to realize scheduling of all kinds
 of jobs. For the basic concepts behind Quartz, see
-http://quartz-scheduler.org[]. For convenience purposes, Spring offers a couple of
+https://www.quartz-scheduler.org/[]. For convenience purposes, Spring offers a couple of
 classes that simplify using Quartz within Spring-based applications.
 
 
@@ -6762,9 +6766,9 @@ support of <<cache-jsr-107,JSR-107 annotations>> and more customization options.
 
 The terms, "`buffer`" and "`cache,`" tend to be used interchangeably. Note, however,
 that they represent different things. Traditionally, a buffer is used as an intermediate
-temporary store for data between a fast and a slow entity. As one party would has to wait
+temporary store for data between a fast and a slow entity. As one party would have to wait
 for the other (which affects performance), the buffer alleviates this by allowing entire
-blocks of data to move at once rather then in small chunks. The data is written and read
+blocks of data to move at once rather than in small chunks. The data is written and read
 only once from the buffer. Furthermore, the buffers are visible to at least one party
 that is aware of it.
 
@@ -6773,19 +6777,20 @@ caching occurs. It also improves performance but does so by letting the same dat
 read multiple times in a fast fashion.
 
 You can find a further explanation of the differences between a buffer and a cache
-http://en.wikipedia.org/wiki/Cache_(computing)#The_difference_between_buffer_and_cache[here].
+https://en.wikipedia.org/wiki/Cache_(computing)#The_difference_between_buffer_and_cache[here].
 ****
 
-At its core, the cache abstraction applies caching to Java methods, thus reducing the number
-of executions based on the information available in the cache. That is, each time a
-targeted method is invoked, the abstraction applies a caching behavior that checks
-whether the method has been already executed for the given arguments. If it has been executed,
-the cached result is returned without having to execute the actual method. If the method has
-not been executed, then it is executed, and the result is cached and returned to the user so that, the
-next time the method is invoked, the cached result is returned. This way, expensive
-methods (whether CPU- or IO-bound) can be executed only once for a given set of
-parameters and the result reused without having to actually execute the method again.
-The caching logic is applied transparently without any interference to the invoker.
+At its core, the cache abstraction applies caching to Java methods, thus reducing the
+number of executions based on the information available in the cache. That is, each time
+a targeted method is invoked, the abstraction applies a caching behavior that checks
+whether the method has been already executed for the given arguments. If it has been
+executed, the cached result is returned without having to execute the actual method.
+If the method has not been executed, then it is executed, and the result is cached and
+returned to the user so that, the next time the method is invoked, the cached result is
+returned. This way, expensive methods (whether CPU- or IO-bound) can be executed only
+once for a given set of parameters and the result reused without having to actually
+execute the method again. The caching logic is applied transparently without any
+interference to the invoker.
 
 IMPORTANT: This approach works only for methods that are guaranteed to return the same
 output (result) for a given input (or arguments) no matter how many times it is executed.
@@ -6794,15 +6799,14 @@ The caching abstraction provides other cache-related operations, such as the abi
 to update the content of the cache or to remove one or all entries. These are useful if
 the cache deals with data that can change during the course of the application.
 
-As with other services in the Spring Framework, the caching service is an
-abstraction (not a cache implementation) and requires the use of actual storage to
-store the cache data -- that is, the abstraction frees you from having to write
-the caching logic but does not provide the actual data store. This abstraction is
-materialized by the `org.springframework.cache.Cache` and
-`org.springframework.cache.CacheManager` interfaces.
+As with other services in the Spring Framework, the caching service is an abstraction
+(not a cache implementation) and requires the use of actual storage to store the cache data --
+that is, the abstraction frees you from having to write the caching logic but does not
+provide the actual data store. This abstraction is materialized by the
+`org.springframework.cache.Cache` and `org.springframework.cache.CacheManager` interfaces.
 
 Spring provides <<cache-store-configuration, a few implementations>> of that abstraction:
-JDK `java.util.concurrent.ConcurrentMap` based caches, http://ehcache.org/[Ehcache 2.x],
+JDK `java.util.concurrent.ConcurrentMap` based caches, https://www.ehcache.org/[Ehcache 2.x],
 Gemfire cache, https://github.com/ben-manes/caffeine/wiki[Caffeine], and JSR-107
 compliant caches (such as Ehcache 3.x). See <<cache-plug>> for more information on
 plugging in other cache stores and providers.
@@ -6844,11 +6848,12 @@ For caching declaration, Spring's caching abstraction provides a set of Java ann
 [[cache-annotations-cacheable]]
 ==== The `@Cacheable` Annotation
 
-As the name implies, you can use `@Cacheable` to demarcate methods that are cacheable -- that
-is, methods for which the result is stored in the cache so that, on subsequent invocations
-(with the same arguments), the value in the cache is returned without having to actually
-execute the method. In its simplest form, the annotation declaration requires the name
-of the cache associated with the annotated method, as the following example shows:
+As the name implies, you can use `@Cacheable` to demarcate methods that are cacheable --
+that is, methods for which the result is stored in the cache so that, on subsequent
+invocations (with the same arguments), the value in the cache is returned without
+having to actually execute the method. In its simplest form, the annotation declaration
+requires the name of the cache associated with the annotated method, as the following
+example shows:
 
 [source,java,indent=0]
 [subs="verbatim,quotes"]
@@ -6860,10 +6865,9 @@ of the cache associated with the annotated method, as the following example show
 In the preceding snippet, the `findBook` method is associated with the cache named `books`.
 Each time the method is called, the cache is checked to see whether the invocation has
 already been executed and does not have to be repeated. While in most cases, only one
-cache is declared, the annotation lets multiple names be specified so that more
-than one cache is being used. In this case, each of the caches is checked before
-executing the method -- if at least one cache is hit, the associated value is
-returned.
+cache is declared, the annotation lets multiple names be specified so that more than one
+cache is being used. In this case, each of the caches is checked before executing the
+method -- if at least one cache is hit, the associated value is returned.
 
 NOTE: All the other caches that do not contain the value are also updated, even though
 the cached method was not actually executed.
@@ -6880,17 +6884,17 @@ The following example uses `@Cacheable` on the `findBook` method:
 [[cache-annotations-cacheable-default-key]]
 ===== Default Key Generation
 
-Since caches are essentially key-value stores, each invocation of a cached method needs
-to be translated into a suitable key for cache access. The caching
-abstraction uses a simple `KeyGenerator` based on the following algorithm:
+Since caches are essentially key-value stores, each invocation of a cached method
+needs to be translated into a suitable key for cache access. The caching abstraction
+uses a simple `KeyGenerator` based on the following algorithm:
 
 * If no params are given, return `SimpleKey.EMPTY`.
 * If only one param is given, return that instance.
 * If more than one param is given, return a `SimpleKey` that contains all parameters.
 
 This approach works well for most use-cases, as long as parameters have natural keys
-and implement valid `hashCode()` and `equals()` methods. If that is not the case, you need to change the
-strategy.
+and implement valid `hashCode()` and `equals()` methods. If that is not the case,
+you need to change the strategy.
 
 To provide a different default key generator, you need to implement the
 `org.springframework.cache.interceptor.KeyGenerator` interface.
@@ -6956,8 +6960,9 @@ The preceding snippets show how easy it is to select a certain argument, one of 
 properties, or even an arbitrary (static) method.
 
 If the algorithm responsible for generating the key is too specific or if it needs
-to be shared, you can define a custom `keyGenerator` on the operation. To do
-so, specify the name of the `KeyGenerator` bean implementation to use, as the following example shows:
+to be shared, you can define a custom `keyGenerator` on the operation. To do so,
+specify the name of the `KeyGenerator` bean implementation to use, as the following
+example shows:
 
 [source,java,indent=0]
 [subs="verbatim,quotes"]
@@ -6985,8 +6990,8 @@ To provide a different default cache resolver, you need to implement the
 The default cache resolution fits well for applications that work with a
 single `CacheManager` and have no complex cache resolution requirements.
 
-For applications that work with several cache managers, you can
-set the `cacheManager` to use for each operation, as the following example shows:
+For applications that work with several cache managers, you can set the
+`cacheManager` to use for each operation, as the following example shows:
 
 [source,java,indent=0]
 [subs="verbatim,quotes"]
@@ -7034,8 +7039,8 @@ of caching.
 
 For those particular cases, you can use the `sync` attribute to instruct the underlying
 cache provider to lock the cache entry while the value is being computed. As a result,
-only one thread is busy computing the value, while the others are blocked until the
-entry is updated in the cache. The following example shows how to use the `sync` attribute:
+only one thread is busy computing the value, while the others are blocked until the entry
+is updated in the cache. The following example shows how to use the `sync` attribute:
 
 [source,java,indent=0]
 [subs="verbatim,quotes"]
@@ -7046,8 +7051,8 @@ entry is updated in the cache. The following example shows how to use the `sync`
 <1> Using the `sync` attribute.
 
 
-NOTE: This is an optional feature, and your favorite cache library may not support it. All
-`CacheManager` implementations provided by the core framework support it. See the
+NOTE: This is an optional feature, and your favorite cache library may not support it.
+All `CacheManager` implementations provided by the core framework support it. See the
 documentation of your cache provider for more details.
 
 [[cache-annotations-cacheable-condition]]
@@ -7161,11 +7166,11 @@ available to the context so that you can use them for key and conditional comput
 [[cache-annotations-put]]
 ==== The `@CachePut` Annotation
 
-When the cache needs to be updated without interfering with the method
-execution, you can use the `@CachePut` annotation. That is, the method is always
-executed and its result is placed into the cache (according to the `@CachePut` options). It
-supports the same options as `@Cacheable` and should be used for cache population rather
-than method flow optimization. The following example uses the `@CachePut` annotation:
+When the cache needs to be updated without interfering with the method execution,
+you can use the `@CachePut` annotation. That is, the method is always executed and its
+result is placed into the cache (according to the `@CachePut` options). It supports
+the same options as `@Cacheable` and should be used for cache population rather than
+method flow optimization. The following example uses the `@CachePut` annotation:
 
 [source,java,indent=0]
 [subs="verbatim,quotes"]
@@ -7177,11 +7182,11 @@ than method flow optimization. The following example uses the `@CachePut` annota
 IMPORTANT: Using `@CachePut` and `@Cacheable` annotations on the same method is generally
 strongly discouraged because they have different behaviors. While the latter causes the
 method execution to be skipped by using the cache, the former forces the execution in
-order to execute a cache update. This leads to unexpected behavior and, with the exception of
-specific corner-cases (such as annotations having conditions that exclude them from each
+order to execute a cache update. This leads to unexpected behavior and, with the exception
+of specific corner-cases (such as annotations having conditions that exclude them from each
 other), such declarations should be avoided. Note also that such conditions should not rely
-on the result object (that is, the `#result` variable), as these are validated up-front to confirm
-the exclusion.
+on the result object (that is, the `#result` variable), as these are validated up-front to
+confirm the exclusion.
 
 
 [[cache-annotations-evict]]
@@ -7195,7 +7200,7 @@ Similarly to its sibling, `@CacheEvict` requires specifying one or more caches
 that are affected by the action, allows a custom cache and key resolution or a
 condition to be specified, and features an extra parameter
 (`allEntries`) that indicates whether a cache-wide eviction needs to be performed
-rather then just an entry eviction (based on the key). The following example evicts
+rather than just an entry eviction (based on the key). The following example evicts
 all entries from the `books` cache:
 
 [source,java,indent=0]
@@ -7207,11 +7212,11 @@ all entries from the `books` cache:
 <1> Using the `allEntries` attribute to evict all entries from the cache.
 
 
-This option comes in handy when an entire cache region needs to be cleared out. Rather
-then evicting each entry (which would take a long time, since it is inefficient), all the
-entries are removed in one operation, as the preceding example shows. Note that the framework ignores
-any key specified in this scenario as it does not apply (the entire cache is evicted, not
-only one entry).
+This option comes in handy when an entire cache region needs to be cleared out.
+Rather than evicting each entry (which would take a long time, since it is inefficient),
+all the entries are removed in one operation, as the preceding example shows.
+Note that the framework ignores any key specified in this scenario as it does not apply
+(the entire cache is evicted, not only one entry).
 
 You can also indicate whether the eviction should occur after (the default) or before
 the method executes by using the `beforeInvocation` attribute. The former provides the
@@ -7222,10 +7227,9 @@ The latter (`beforeInvocation=true`) causes the eviction to always occur before 
 method is invoked. This is useful in cases where the eviction does not need to be tied
 to the method outcome.
 
-Note that `void` methods can be used with `@CacheEvict` - as the
-methods act as a trigger, the return values are ignored (as they do nt interact with the
-cache). This is not the case with `@Cacheable` which adds or updates data into the cache
-and, thus, requires a result.
+Note that `void` methods can be used with `@CacheEvict` - as the methods act as a trigger,
+the return values are ignored (as they do not interact with the cache). This is not the case
+with `@Cacheable` which adds or updates data into the cache and, thus, requires a result.
 
 
 [[cache-annotations-caching]]
@@ -7310,8 +7314,8 @@ Alternatively, for XML configuration you can use the `cache:annotation-driven` e
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xmlns:cache="http://www.springframework.org/schema/cache"
 		xsi:schemaLocation="
-			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-			http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd">
+			http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/cache https://www.springframework.org/schema/cache/spring-cache.xsd">
 
 			<cache:annotation-driven/>
 	</beans>
@@ -7714,9 +7718,9 @@ or eviction contracts.
 
 NOTE: Ehcache 3.x is fully JSR-107 compliant and no dedicated support is required for it.
 
-The Ehcache 2.x implementation is located in the `org.springframework.cache.ehcache` package.
-Again, to use it, you need to declare the appropriate `CacheManager`. The following
-example shows how to do so:
+The Ehcache 2.x implementation is located in the `org.springframework.cache.ehcache`
+package. Again, to use it, you need to declare the appropriate `CacheManager`.
+The following example shows how to do so:
 
 [source,xml,indent=0]
 [subs="verbatim,quotes"]
@@ -7808,7 +7812,7 @@ The following example shows how to do so:
 Sometimes, when switching environments or doing testing, you might have cache
 declarations without having an actual backing cache configured. As this is an invalid
 configuration, an exception is thrown at runtime, since the caching infrastructure
-is unable to find a suitable store. In situations like this, rather then removing the
+is unable to find a suitable store. In situations like this, rather than removing the
 cache declarations (which can prove tedious), you can wire in a simple dummy cache that
 performs no caching -- that is, it forces the cached methods to be executed every time.
 The following example shows how to do so:
@@ -7843,7 +7847,7 @@ Clearly, there are plenty of caching products out there that you can use as a ba
 store. To plug them in, you need to provide a `CacheManager` and a `Cache` implementation,
 since, unfortunately, there is no available standard that we can use instead.
 This may sound harder than it is, since, in practice, the classes tend to be simple
-http://en.wikipedia.org/wiki/Adapter_pattern[adapters] that map the caching abstraction
+https://en.wikipedia.org/wiki/Adapter_pattern[adapters] that map the caching abstraction
 framework on top of the storage API, as the `ehcache` classes do. Most `CacheManager`
 classes can use the classes in the `org.springframework.cache.support` package
 (such as `AbstractCacheManager` which takes care of the boiler-plate code,

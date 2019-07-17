@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.net.URL;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -220,7 +221,7 @@ public abstract class BeanUtils {
 	 * classes, this simply returns {@code null}.
 	 * @param clazz the class to check
 	 * @since 5.0
-	 * @see <a href="http://kotlinlang.org/docs/reference/classes.html#constructors">Kotlin docs</a>
+	 * @see <a href="https://kotlinlang.org/docs/reference/classes.html#constructors">Kotlin docs</a>
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable
@@ -584,7 +585,7 @@ public abstract class BeanUtils {
 	/**
 	 * Check if the given type represents a "simple" property:
 	 * a primitive, a String or other CharSequence, a Number, a Date,
-	 * a URI, a URL, a Locale, a Class, or a corresponding array.
+	 * a Temporal, a URI, a URL, a Locale, a Class, or a corresponding array.
 	 * <p>Used to determine properties to check for a "simple" dependency-check.
 	 * @param clazz the type to check
 	 * @return whether the given type represents a "simple" property
@@ -599,7 +600,7 @@ public abstract class BeanUtils {
 	/**
 	 * Check if the given type represents a "simple" value type:
 	 * a primitive, an enum, a String or other CharSequence, a Number, a Date,
-	 * a URI, a URL, a Locale or a Class.
+	 * a Temporal, a URI, a URL, a Locale or a Class.
 	 * @param clazz the type to check
 	 * @return whether the given type represents a "simple" value type
 	 */
@@ -609,6 +610,7 @@ public abstract class BeanUtils {
 				CharSequence.class.isAssignableFrom(clazz) ||
 				Number.class.isAssignableFrom(clazz) ||
 				Date.class.isAssignableFrom(clazz) ||
+				Temporal.class.isAssignableFrom(clazz) ||
 				URI.class == clazz || URL.class == clazz ||
 				Locale.class == clazz || Class.class == clazz);
 	}
@@ -732,8 +734,8 @@ public abstract class BeanUtils {
 		/**
 		 * Retrieve the Java constructor corresponding to the Kotlin primary constructor, if any.
 		 * @param clazz the {@link Class} of the Kotlin class
-		 * @see <a href="http://kotlinlang.org/docs/reference/classes.html#constructors">
-		 * http://kotlinlang.org/docs/reference/classes.html#constructors</a>
+		 * @see <a href="https://kotlinlang.org/docs/reference/classes.html#constructors">
+		 * https://kotlinlang.org/docs/reference/classes.html#constructors</a>
 		 */
 		@Nullable
 		public static <T> Constructor<T> findPrimaryConstructor(Class<T> clazz) {

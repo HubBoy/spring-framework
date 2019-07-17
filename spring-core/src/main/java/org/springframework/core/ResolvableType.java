@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.StringJoiner;
 
 import org.springframework.core.SerializableTypeWrapper.FieldTypeProvider;
 import org.springframework.core.SerializableTypeWrapper.MethodParameterTypeProvider;
@@ -880,7 +881,7 @@ public class ResolvableType implements Serializable {
 
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(@Nullable Object other) {
 		if (this == other) {
 			return true;
 		}
@@ -935,7 +936,7 @@ public class ResolvableType implements Serializable {
 		if (this == NONE) {
 			return null;
 		}
-		return new DefaultVariableResolver();
+		return new DefaultVariableResolver(this);
 	}
 
 	/**
@@ -965,13 +966,10 @@ public class ResolvableType implements Serializable {
 				return "?";
 			}
 		}
-		StringBuilder result = new StringBuilder(this.resolved.getName());
 		if (hasGenerics()) {
-			result.append('<');
-			result.append(StringUtils.arrayToDelimitedString(getGenerics(), ", "));
-			result.append('>');
+			return this.resolved.getName() + '<' + StringUtils.arrayToDelimitedString(getGenerics(), ", ") + '>';
 		}
-		return result.toString();
+		return this.resolved.getName();
 	}
 
 
@@ -997,7 +995,7 @@ public class ResolvableType implements Serializable {
 	 * {@link Class#isAssignableFrom}, which this serves as a wrapper for.
 	 * For example: {@code ResolvableType.forRawClass(List.class)}.
 	 * @param clazz the class to introspect ({@code null} is semantically
-	 * equivalent to {@code Object.class} for typical use cases here}
+	 * equivalent to {@code Object.class} for typical use cases here)
 	 * @return a {@link ResolvableType} for the specified class
 	 * @since 4.2
 	 * @see #forClass(Class)
@@ -1455,17 +1453,23 @@ public class ResolvableType implements Serializable {
 
 
 	@SuppressWarnings("serial")
-	private class DefaultVariableResolver implements VariableResolver {
+	private static class DefaultVariableResolver implements VariableResolver {
+
+		private final ResolvableType source;
+
+		DefaultVariableResolver(ResolvableType resolvableType) {
+			this.source = resolvableType;
+		}
 
 		@Override
 		@Nullable
 		public ResolvableType resolveVariable(TypeVariable<?> variable) {
-			return ResolvableType.this.resolveVariable(variable);
+			return this.source.resolveVariable(variable);
 		}
 
 		@Override
 		public Object getSource() {
-			return ResolvableType.this;
+			return this.source;
 		}
 	}
 
@@ -1515,18 +1519,15 @@ public class ResolvableType implements Serializable {
 
 		@Override
 		public String getTypeName() {
-			StringBuilder result = new StringBuilder(this.rawType.getTypeName());
+			String typeName = this.rawType.getTypeName();
 			if (this.typeArguments.length > 0) {
-				result.append('<');
-				for (int i = 0; i < this.typeArguments.length; i++) {
-					if (i > 0) {
-						result.append(", ");
-					}
-					result.append(this.typeArguments[i].getTypeName());
+				StringJoiner stringJoiner = new StringJoiner(", ", "<", ">");
+				for (Type argument : this.typeArguments) {
+					stringJoiner.add(argument.getTypeName());
 				}
-				result.append('>');
+				return typeName + stringJoiner;
 			}
-			return result.toString();
+			return typeName;
 		}
 
 		@Override
@@ -1546,7 +1547,7 @@ public class ResolvableType implements Serializable {
 		}
 
 		@Override
-		public boolean equals(Object other) {
+		public boolean equals(@Nullable Object other) {
 			if (this == other) {
 				return true;
 			}

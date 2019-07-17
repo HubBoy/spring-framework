@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -640,9 +640,10 @@ public abstract class AbstractMethodMessageHandler<T>
 		if (method != null) {
 			return new InvocableHandlerMethod(handlerMethod.getBean(), method);
 		}
-		for (MessagingAdviceBean advice : this.exceptionHandlerAdviceCache.keySet()) {
+		for (Map.Entry<MessagingAdviceBean, AbstractExceptionHandlerMethodResolver> entry : this.exceptionHandlerAdviceCache.entrySet()) {
+			MessagingAdviceBean advice = entry.getKey();
 			if (advice.isApplicableToBeanType(beanType)) {
-				resolver = this.exceptionHandlerAdviceCache.get(advice);
+				resolver = entry.getValue();
 				method = resolver.resolveMethod(exception);
 				if (method != null) {
 					return new InvocableHandlerMethod(advice.resolveBean(), method);

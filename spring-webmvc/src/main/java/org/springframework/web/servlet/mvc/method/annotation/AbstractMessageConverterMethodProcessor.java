@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -176,6 +176,9 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 	 * @throws IOException thrown in case of I/O errors
 	 * @throws HttpMediaTypeNotAcceptableException thrown when the conditions indicated
 	 * by the {@code Accept} header on the request cannot be met by the message converters
+	 * @throws HttpMessageNotWritableException thrown if a given message cannot
+	 * be written by a converter, or if the content-type chosen by the server
+	 * has no compatible converter.
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	protected <T> void writeWithMessageConverters(@Nullable T value, MethodParameter returnType,
@@ -218,7 +221,8 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 
 		MediaType selectedMediaType = null;
 		MediaType contentType = outputMessage.getHeaders().getContentType();
-		if (contentType != null && contentType.isConcrete()) {
+		boolean isContentTypePreset = contentType != null && contentType.isConcrete();
+		if (isContentTypePreset) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Found 'Content-Type:" + contentType + "' in response");
 			}
@@ -304,6 +308,10 @@ public abstract class AbstractMessageConverterMethodProcessor extends AbstractMe
 		}
 
 		if (body != null) {
+			if (isContentTypePreset) {
+				throw new HttpMessageNotWritableException(
+						"No converter for [" + valueType + "] with preset Content-Type '" + contentType + "'");
+			}
 			throw new HttpMediaTypeNotAcceptableException(this.allSupportedMediaTypes);
 		}
 	}

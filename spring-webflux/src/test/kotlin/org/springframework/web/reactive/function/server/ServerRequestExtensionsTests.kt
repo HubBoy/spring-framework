@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.web.reactive.function.client
+package org.springframework.web.reactive.function.server
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -26,7 +27,6 @@ import org.junit.Test
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.codec.multipart.Part
 import org.springframework.util.MultiValueMap
-import org.springframework.web.reactive.function.server.*
 import org.springframework.web.server.WebSession
 import reactor.core.publisher.Mono
 import java.security.Principal
@@ -53,6 +53,13 @@ class ServerRequestExtensionsTests {
 	}
 
 	@Test
+	@ExperimentalCoroutinesApi
+	fun `bodyToFlow with reified type parameters`() {
+		request.bodyToFlow<List<Foo>>()
+		verify { request.bodyToFlux(object : ParameterizedTypeReference<List<Foo>>() {}) }
+	}
+
+	@Test
 	fun awaitBody() {
 		every { request.bodyToMono<String>() } returns Mono.just("foo")
 		runBlocking {
@@ -61,10 +68,10 @@ class ServerRequestExtensionsTests {
 	}
 
 	@Test
-	fun awaitBodyNull() {
+	fun awaitBodyOrNull() {
 		every { request.bodyToMono<String>() } returns Mono.empty()
 		runBlocking {
-			assertNull(request.awaitBody<String>())
+			assertNull(request.awaitBodyOrNull<String>())
 		}
 	}
 

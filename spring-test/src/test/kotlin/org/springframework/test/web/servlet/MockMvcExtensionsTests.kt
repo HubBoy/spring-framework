@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -51,7 +51,7 @@ class MockMvcExtensionsTests {
 			principal = Principal { "foo" }
 		}.andExpect {
 			status { isOk }
-			content { contentType(APPLICATION_JSON_UTF8) }
+			content { contentType(APPLICATION_JSON) }
 			jsonPath("$.name") { value("Lee") }
 			content { json("""{"someBoolean": false}""", false) }
 		}.andDo {
@@ -89,14 +89,14 @@ class MockMvcExtensionsTests {
 	fun get() {
 		mockMvc.get("/person/{name}", "Lee") {
 				secure = true
-				accept = APPLICATION_JSON_UTF8
+				accept = APPLICATION_JSON
 				headers {
 					contentLanguage = Locale.FRANCE
 				}
 				principal = Principal { "foo" }
 		}.andExpect {
 			status { isOk }
-			content { contentType(APPLICATION_JSON_UTF8) }
+			content { contentType(APPLICATION_JSON) }
 			jsonPath("$.name") { value("Lee") }
 			content { json("""{"someBoolean": false}""", false) }
 		}.andDo {
